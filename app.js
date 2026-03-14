@@ -471,8 +471,8 @@ function waitForNextFrame() {
 
 function drawCard(pdf, row, x, y, width, height) {
   const pad = 4;
-  const headerHeight = 16;
-  const columnGap = 3;
+  const headerHeight = 19;
+  const columnGap = 4;
   const halfWidth = (width - (pad * 2) - columnGap) / 2;
 
   pdf.setDrawColor(173, 43, 39);
@@ -485,80 +485,80 @@ function drawCard(pdf, row, x, y, width, height) {
 
   if (state.logoDataUrl) {
     try {
-      const logoBox = fitLogo(15, 11);
-      const logoX = x + pad + ((15 - logoBox.width) / 2);
-      const logoY = y + 2.5 + ((11 - logoBox.height) / 2);
+      const logoBox = fitLogo(25, 18.8);
+      const logoX = x + pad + ((25 - logoBox.width) / 2);
+      const logoY = y + 0.45 + ((18.8 - logoBox.height) / 2);
       pdf.addImage(state.logoDataUrl, 'PNG', logoX, logoY, logoBox.width, logoBox.height);
     } catch (error) {
       console.warn('No se pudo insertar el logo en el PDF.', error);
     }
   }
 
-  const priceX = x + pad + 18;
-  const priceWidth = width - (pad * 2) - 18;
+  const priceX = x + pad + 20;
+  const priceWidth = width - (pad * 2) - 20;
   const priceCenterX = priceX + (priceWidth / 2);
   pdf.setTextColor(120, 37, 33);
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(6.1);
-  pdf.text('PRECIO TOTAL', priceCenterX, y + 5.4, { align: 'center' });
+  pdf.setFontSize(10);
+  pdf.text('PRECIO TOTAL', priceCenterX, y + 5.6, { align: 'center' });
 
   pdf.setTextColor(173, 43, 39);
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(13.2);
-  pdf.text(formatCurrency(row.PRECIO), priceCenterX, y + 11.6, { align: 'center', maxWidth: priceWidth });
+  pdf.setFontSize(15);
+  pdf.text(formatCurrency(row.PRECIO), priceCenterX, y + 12.4, { align: 'center', maxWidth: priceWidth });
 
   pdf.setDrawColor(228, 215, 210);
   pdf.setLineWidth(0.2);
   pdf.line(x + pad, y + headerHeight, x + width - pad, y + headerHeight);
 
-  let cursorY = y + headerHeight + 4.5;
-  cursorY = writeFieldPair(pdf, 'CLIENTE', row.CLIENTE, 'CELULAR', row.CELULAR, x + pad, cursorY, halfWidth, columnGap);
-  cursorY = writeFieldPair(pdf, 'PRODUCTO', row.PRODUCTO, 'FECHA ENVIO', row['FECHA DE ENVIO'], x + pad, cursorY, halfWidth, columnGap);
-  writeObservationLine(pdf, row.OBSERVACION, x + pad, Math.min(cursorY + 1, y + height - 8), width - (pad * 2));
+  let cursorY = y + headerHeight + 8;
+  cursorY = writeFieldPair(pdf, 'CLIENTE', row.CLIENTE, 'CELULAR', row.CELULAR, x + pad, cursorY, halfWidth, columnGap, true);
+  cursorY = writeFieldPair(pdf, 'PRODUCTO', row.PRODUCTO, 'FECHA ENVIO', row['FECHA DE ENVIO'], x + pad, cursorY, halfWidth, columnGap, true);
+  writeObservationLine(pdf, row.OBSERVACION, x + pad, Math.min(cursorY + 2, y + height - 10.2), width - (pad * 2));
 }
 
-function writeFieldPair(pdf, leftLabel, leftValue, rightLabel, rightValue, x, y, columnWidth, columnGap) {
+function writeFieldPair(pdf, leftLabel, leftValue, rightLabel, rightValue, x, y, columnWidth, columnGap, rightAligned = false) {
   const rightX = x + columnWidth + columnGap;
+  const rightEdge = rightX + columnWidth;
 
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(5.6);
+  pdf.setFontSize(10);
   pdf.setTextColor(118, 52, 48);
   pdf.text(leftLabel, x, y);
-  pdf.text(rightLabel, rightX, y);
+  pdf.text(rightLabel, rightAligned ? rightEdge : rightX, y, rightAligned ? { align: 'right' } : undefined);
 
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7.2);
+  pdf.setFontSize(10);
   pdf.setTextColor(42, 42, 42);
 
   const leftText = pdf.splitTextToSize(getDisplayValue(leftValue), columnWidth);
   const rightText = pdf.splitTextToSize(getDisplayValue(rightValue), columnWidth);
   const maxLines = Math.max(leftText.length, rightText.length, 1);
-  const valueY = y + 3.2;
+  const valueY = y + 3.8;
 
   pdf.text(leftText, x, valueY);
-  pdf.text(rightText, rightX, valueY);
+  pdf.text(rightText, rightAligned ? rightEdge : rightX, valueY, rightAligned ? { align: 'right', maxWidth: columnWidth } : undefined);
 
-  const nextY = valueY + (maxLines * 3.2) + 2;
+  const nextY = valueY + (maxLines * 3.55) + 2.3;
   pdf.setDrawColor(242, 236, 233);
   pdf.setLineWidth(0.18);
-  pdf.line(x, nextY - 1, rightX + columnWidth, nextY - 1);
+  pdf.line(x, nextY - 1, rightEdge, nextY - 1);
 
-  return nextY + 2;
+  return nextY + 2.2;
 }
 
 function writeObservationLine(pdf, value, x, y, width) {
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(5.6);
+  pdf.setFontSize(10);
   pdf.setTextColor(118, 52, 48);
   pdf.text('OBSERVACION', x, y);
 
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7.1);
+  pdf.setFontSize(10);
   pdf.setTextColor(42, 42, 42);
   const singleLine = pdf.splitTextToSize(getDisplayValue(value), width)[0] || '-';
-  pdf.text(singleLine, x, y + 3.2, { maxWidth: width });
+  pdf.text(singleLine, x, y + 3.8, { maxWidth: width });
 }
-
 function getDisplayValue(value) {
   return value && String(value).trim() ? String(value).trim() : '-';
 }
@@ -605,6 +605,16 @@ function downloadGeneratedPdf() {
   state.generatedPdf.save('tarjetas-mercado-central-express.pdf');
   announce('La descarga del PDF ha comenzado.', 'success', true, 'Descarga iniciada');
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
