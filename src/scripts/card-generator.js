@@ -17,6 +17,7 @@ const state = {
   workbookSheets: 0,
   generatedPdf: null,
   logoDataUrl: null,
+  loadingStartedAt: 0,
 };
 
 const elements = {
@@ -25,6 +26,9 @@ const elements = {
   previewBody: document.getElementById('previewBody'),
   toastStack: document.getElementById('toastStack'),
   srStatus: document.getElementById('srStatus'),
+  loadingOverlay: document.getElementById('loadingOverlay'),
+  loadingTitle: document.getElementById('loadingTitle'),
+  loadingMessage: document.getElementById('loadingMessage'),
   actionBtn: document.getElementById('actionBtn'),
   orderCount: document.getElementById('orderCount'),
   sheetCount: document.getElementById('sheetCount'),
@@ -107,10 +111,10 @@ function handleFileSelection(event) {
 }
 
 function processExcelFile(file) {
-  announce('Leyendo archivo Excel...', 'info', true, 'Procesando archivo');
+  showLoading('Procesando archivo', 'Leyendo y validando la informacion del Excel...');
   const reader = new FileReader();
 
-  reader.onload = (event) => {
+  reader.onload = async (event) => {
     try {
       const workbook = XLSX.read(event.target.result, { type: 'array', cellDates: true });
       const rows = extractWorkbookRows(workbook);
@@ -126,16 +130,19 @@ function processExcelFile(file) {
       updateSummary();
       renderPreview(rows);
       updateActionButton();
+      await hideLoading();
       announce('Archivo cargado correctamente.', 'success', true, 'Archivo cargado');
     } catch (error) {
       console.error(error);
       resetLoadedData();
+      await hideLoading();
       announce('Error al leer archivo. Verifica encabezados exactos y orden requerido.', 'error', true, 'Error de lectura');
     }
   };
 
-  reader.onerror = () => {
+  reader.onerror = async () => {
     resetLoadedData();
+    await hideLoading();
     announce('Error al leer archivo.', 'error', true, 'Error de lectura');
   };
 
@@ -270,6 +277,35 @@ function resetLoadedData() {
   updateActionButton();
 }
 
+function showLoading(title, message) {
+  if (!elements.loadingOverlay) {
+    return;
+  }
+
+  state.loadingStartedAt = performance.now();
+  elements.loadingTitle.textContent = title;
+  elements.loadingMessage.textContent = message;
+  elements.loadingOverlay.hidden = false;
+  elements.loadingOverlay.setAttribute('aria-hidden', 'false');
+}
+
+async function hideLoading() {
+  if (!elements.loadingOverlay) {
+    return;
+  }
+
+  const elapsed = performance.now() - state.loadingStartedAt;
+  const minimumDuration = 3000;
+  const remainingTime = Math.max(0, minimumDuration - elapsed);
+
+  if (remainingTime > 0) {
+    await wait(remainingTime);
+  }
+
+  elements.loadingOverlay.hidden = true;
+  elements.loadingOverlay.setAttribute('aria-hidden', 'true');
+}
+
 function announce(message, type = 'info', shouldToast = true, title) {
   if (elements.srStatus) {
     elements.srStatus.textContent = message;
@@ -317,25 +353,15 @@ function showToast(title, message, type = 'info') {
     window.setTimeout(() => {
       toast.remove();
     }, 180);
-  }, getToastDuration(type, title));
+  }, getToastDuration(type));
 }
 
-function getToastDuration(type, title = '') {
-  const normalizedTitle = String(title).toLowerCase();
-
-  if (type === 'success') {
-    return 10000;
+function getToastDuration(type) {
+  if (type === 'success' || type === 'error') {
+    return 5000;
   }
 
-  if (normalizedTitle.includes('procesando') || normalizedTitle.includes('preparando')) {
-    return 7000;
-  }
-
-  if (type === 'error') {
-    return 10000;
-  }
-
-  return 7000;
+  return 4000;
 }
 
 function getToastIcon(type) {
@@ -350,13 +376,14 @@ function getToastIcon(type) {
   return 'i';
 }
 
-function generatePdfCards() {
+async function generatePdfCards() {
   if (!state.rows.length) {
     announce('Carga un archivo antes de generar el PDF.', 'error', true, 'Accion bloqueada');
     return;
   }
 
-  announce('Generando PDF...', 'info', true, 'Preparando documento');
+  showLoading('Generando PDF', 'Organizando tarjetas y preparando el documento final...');
+  await waitForNextFrame();
 
   try {
     const pdf = new jsPDF({
@@ -392,26 +419,43 @@ function generatePdfCards() {
 
     state.generatedPdf = pdf;
     updateActionButton();
+    await hideLoading();
     announce('PDF listo para descargar.', 'success', true, 'Documento generado');
   } catch (error) {
     console.error(error);
     state.generatedPdf = null;
     updateActionButton();
+    await hideLoading();
     announce('No se pudo generar el PDF.', 'error', true, 'Error al generar');
   }
 }
 
+function wait(ms) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+function waitForNextFrame() {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(resolve);
+    });
+  });
+}
+
 function drawCard(pdf, row, x, y, width, height) {
   pdf.setDrawColor(173, 43, 39);
-  pdf.setLineWidth(0.5);
+  pdf.setLineWidth(0.55);
   pdf.rect(x, y, width, height);
 
-  pdf.setFillColor(253, 244, 243);
-  pdf.rect(x + 2, y + 2, width - 4, 20, 'F');
+  pdf.setDrawColor(173, 43, 39);
+  pdf.setLineWidth(1.1);
+  pdf.line(x, y, x + width, y);
 
   if (state.logoDataUrl) {
     try {
-      pdf.addImage(state.logoDataUrl, 'PNG', x + 5, y + 4.5, 18, 18);
+      pdf.addImage(state.logoDataUrl, 'PNG', x + 6, y + 5, 20, 20);
     } catch (error) {
       console.warn('No se pudo insertar el logo en el PDF.', error);
     }
@@ -419,58 +463,54 @@ function drawCard(pdf, row, x, y, width, height) {
 
   pdf.setTextColor(80, 27, 25);
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9.2);
-  const companyLines = pdf.splitTextToSize('Mercado Central Express', width - 31);
-  pdf.text(companyLines, x + 26, y + 8.5);
+  pdf.setFontSize(10.2);
+  const companyLines = pdf.splitTextToSize('Mercado Central Express', width - 36);
+  pdf.text(companyLines, x + 30, y + 10);
 
-  const contentX = x + 5;
-  let cursorY = y + 26;
+  pdf.setDrawColor(228, 215, 210);
+  pdf.setLineWidth(0.25);
+  pdf.line(x + 5, y + 28, x + width - 5, y + 28);
+
+  const contentX = x + 6;
+  let cursorY = y + 35;
 
   const fields = [
-    ['Cliente', row['CLIENTE']],
-    ['Celular', row['CELULAR']],
-    ['Direccion', row['DIRECCION']],
-    ['Producto', row['PRODUCTO']],
-    ['Precio', row['PRECIO']],
-    ['Distrito', row['DISTRITO']],
-    ['Fecha de envio', row['FECHA DE ENVIO']],
-    ['Observacion', row['OBSERVACION']],
+    ['CLIENTE', row['CLIENTE']],
+    ['CELULAR', row['CELULAR']],
+    ['DIRECCION', row['DIRECCION']],
+    ['PRODUCTO', row['PRODUCTO']],
+    ['PRECIO', row['PRECIO']],
+    ['DISTRITO', row['DISTRITO']],
+    ['FECHA DE ENVIO', row['FECHA DE ENVIO']],
+    ['OBSERVACION', row['OBSERVACION']],
   ];
 
-  fields.forEach(([label, value]) => {
-    cursorY = writeField(pdf, label, value || '-', contentX, cursorY, width - 8);
-  });
+  fields.forEach(([label, value], index) => {
+    cursorY = writeField(pdf, label, value || '-', contentX, cursorY, width - 12);
 
-  pdf.setDrawColor(220, 220, 220);
-  pdf.setLineDashPattern([1, 1], 0);
-  pdf.line(x + 3, y + height - 8, x + width - 3, y + height - 8);
-  pdf.setLineDashPattern([], 0);
+    if (index < fields.length - 1) {
+      pdf.setDrawColor(242, 236, 233);
+      pdf.setLineWidth(0.2);
+      pdf.line(contentX, cursorY - 1.5, x + width - 6, cursorY - 1.5);
+    }
+  });
 }
 
 function writeField(pdf, label, value, x, y, maxWidth) {
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(8);
-  pdf.setTextColor(51, 51, 51);
-  pdf.text(`${label}:`, x, y);
+  pdf.setFontSize(7.1);
+  pdf.setTextColor(118, 52, 48);
+  pdf.text(label, x, y);
 
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.setTextColor(65, 65, 65);
+  pdf.setFontSize(8.8);
+  pdf.setTextColor(42, 42, 42);
 
-  const labelWidth = pdf.getTextWidth(`${label}: `);
-  const firstLineWidth = Math.max(12, maxWidth - labelWidth - 1);
-  const textLines = pdf.splitTextToSize(value, firstLineWidth);
-  const firstLineX = x + labelWidth + 0.8;
+  const textLines = pdf.splitTextToSize(value, maxWidth);
+  const valueY = y + 4.2;
+  pdf.text(textLines, x, valueY);
 
-  if (textLines.length > 0) {
-    pdf.text(textLines[0], firstLineX, y);
-  }
-
-  if (textLines.length > 1) {
-    pdf.text(textLines.slice(1), x, y + 4);
-  }
-
-  return y + 4 + Math.max(0, textLines.length - 1) * 3.5 + 4;
+  return valueY + (textLines.length * 3.9) + 2.6;
 }
 
 function downloadGeneratedPdf() {
@@ -482,8 +522,5 @@ function downloadGeneratedPdf() {
   state.generatedPdf.save('tarjetas-mercado-central-express.pdf');
   announce('La descarga del PDF ha comenzado.', 'success', true, 'Descarga iniciada');
 }
-
-
-
 
 

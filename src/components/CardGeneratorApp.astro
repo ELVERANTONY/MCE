@@ -15,6 +15,14 @@ const previewHeaders = [
   <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
   <div class="sr-only" id="srStatus" aria-live="polite"></div>
 
+  <div class="loading-overlay" id="loadingOverlay" hidden aria-hidden="true">
+    <div class="loading-dialog" role="status" aria-live="assertive" aria-busy="true">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <strong id="loadingTitle">Procesando</strong>
+      <p id="loadingMessage">Espera un momento...</p>
+    </div>
+  </div>
+
   <header class="topbar reveal reveal-delay-1">
     <div class="brand-row">
       <div class="brand-chip">
@@ -22,7 +30,7 @@ const previewHeaders = [
       </div>
       <div class="brand-copy">
         <h1>Mercado Central Express</h1>
-        <p>ConVERTIR pedidos desde Excel a un PDF listo para imprimir</p>
+        <p>Convertir pedidos desde Excel a un PDF listo para imprimir</p>
       </div>
     </div>
   </header>
@@ -95,4 +103,3 @@ const previewHeaders = [
 <script>
   import '../scripts/card-generator.js';
 </script>
-
