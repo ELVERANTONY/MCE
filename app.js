@@ -1,7 +1,4 @@
-﻿import { jsPDF } from 'jspdf';
-import * as XLSX from 'xlsx';
-
-const REQUIRED_COLUMNS = [
+﻿const REQUIRED_COLUMNS = [
   'CLIENTE',
   'CELULAR',
   'DIRECCION',
@@ -17,6 +14,7 @@ const state = {
   workbookSheets: 0,
   generatedPdf: null,
   logoDataUrl: null,
+  logoPromise: null,
   loadingStartedAt: 0,
 };
 
@@ -42,7 +40,7 @@ function initializeApp() {
   }
 
   attachEventListeners();
-  preloadLogo();
+  state.logoPromise = preloadLogo();
   updateActionButton();
   announce('Esperando archivo Excel.', 'info', false);
 }
@@ -85,21 +83,39 @@ function handlePrimaryAction() {
 
 async function preloadLogo() {
   try {
-    const logoPath = `${import.meta.env.BASE_URL}assets/logo.png`;
-    const response = await fetch(logoPath);
-    const blob = await response.blob();
-    state.logoDataUrl = await blobToDataUrl(blob);
+    if (window.EMBEDDED_LOGO_DATA_URL) {
+      state.logoDataUrl = window.EMBEDDED_LOGO_DATA_URL;
+      return state.logoDataUrl;
+    }
+
+    state.logoDataUrl = await loadImageAsDataUrl('assets/logo.png');
   } catch {
     state.logoDataUrl = null;
   }
+
+  return state.logoDataUrl;
 }
 
-function blobToDataUrl(blob) {
+function loadImageAsDataUrl(src) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('No se pudo convertir el logo.'));
-    reader.readAsDataURL(blob);
+    const image = new Image();
+
+    image.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.naturalWidth || image.width;
+        canvas.height = image.naturalHeight || image.height;
+
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    image.onerror = () => reject(new Error('No se pudo cargar el logo.'));
+    image.src = src;
   });
 }
 
@@ -223,14 +239,14 @@ function renderPreview(rows) {
   const markup = previewRows
     .map((row) => `
       <tr>
-        <td>${escapeHtml(row['CLIENTE'])}</td>
-        <td>${escapeHtml(row['CELULAR'])}</td>
-        <td>${escapeHtml(row['DIRECCION'])}</td>
-        <td>${escapeHtml(row['PRODUCTO'])}</td>
-        <td>${escapeHtml(row['PRECIO'])}</td>
-        <td>${escapeHtml(row['DISTRITO'])}</td>
+        <td>${escapeHtml(row.CLIENTE)}</td>
+        <td>${escapeHtml(row.CELULAR)}</td>
+        <td>${escapeHtml(row.DIRECCION)}</td>
+        <td>${escapeHtml(row.PRODUCTO)}</td>
+        <td>${escapeHtml(row.PRECIO)}</td>
+        <td>${escapeHtml(row.DISTRITO)}</td>
         <td>${escapeHtml(row['FECHA DE ENVIO'])}</td>
-        <td>${escapeHtml(row['OBSERVACION'])}</td>
+        <td>${escapeHtml(row.OBSERVACION)}</td>
       </tr>
     `)
     .join('');
@@ -383,9 +399,11 @@ async function generatePdfCards() {
   }
 
   showLoading('Generando PDF', 'Organizando tarjetas y preparando el documento final...');
+  await Promise.resolve(state.logoPromise || preloadLogo());
   await waitForNextFrame();
 
   try {
+    const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -475,14 +493,14 @@ function drawCard(pdf, row, x, y, width, height) {
   let cursorY = y + 35;
 
   const fields = [
-    ['CLIENTE', row['CLIENTE']],
-    ['CELULAR', row['CELULAR']],
-    ['DIRECCION', row['DIRECCION']],
-    ['PRODUCTO', row['PRODUCTO']],
-    ['PRECIO', row['PRECIO']],
-    ['DISTRITO', row['DISTRITO']],
+    ['CLIENTE', row.CLIENTE],
+    ['CELULAR', row.CELULAR],
+    ['DIRECCION', row.DIRECCION],
+    ['PRODUCTO', row.PRODUCTO],
+    ['PRECIO', row.PRECIO],
+    ['DISTRITO', row.DISTRITO],
     ['FECHA DE ENVIO', row['FECHA DE ENVIO']],
-    ['OBSERVACION', row['OBSERVACION']],
+    ['OBSERVACION', row.OBSERVACION],
   ];
 
   fields.forEach(([label, value], index) => {
@@ -522,5 +540,7 @@ function downloadGeneratedPdf() {
   state.generatedPdf.save('tarjetas-mercado-central-express.pdf');
   announce('La descarga del PDF ha comenzado.', 'success', true, 'Descarga iniciada');
 }
+
+
 
 
