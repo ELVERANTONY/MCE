@@ -9,6 +9,8 @@
   'OBSERVACION',
 ];
 
+const LOGO_ASPECT_RATIO = 226 / 223;
+
 const state = {
   rows: [],
   workbookSheets: 0,
@@ -46,6 +48,9 @@ function initializeApp() {
 }
 
 function attachEventListeners() {
+  elements.fileInput.addEventListener('click', () => {
+    elements.fileInput.value = '';
+  });
   elements.fileInput.addEventListener('change', handleFileSelection);
   elements.actionBtn.addEventListener('click', handlePrimaryAction);
 
@@ -127,6 +132,7 @@ function handleFileSelection(event) {
 }
 
 function processExcelFile(file) {
+  prepareForNewFile();
   showLoading('Procesando archivo', 'Leyendo y validando la informacion del Excel...');
   const reader = new FileReader();
 
@@ -152,7 +158,8 @@ function processExcelFile(file) {
       console.error(error);
       resetLoadedData();
       await hideLoading();
-      announce('Error al leer archivo. Verifica encabezados exactos y orden requerido.', 'error', true, 'Error de lectura');
+      const errorMessage = error instanceof Error ? error.message : 'Error al leer archivo.';
+      announce(errorMessage, 'error', true, 'Error de lectura');
     }
   };
 
@@ -197,12 +204,10 @@ function validateHeaders(rows) {
   }
 
   const headers = Object.keys(rows[0]);
-  const exactMatch =
-    headers.length === REQUIRED_COLUMNS.length &&
-    REQUIRED_COLUMNS.every((column, index) => headers[index] === column);
+  const missingColumns = REQUIRED_COLUMNS.filter((column) => !headers.includes(column));
 
-  if (!exactMatch) {
-    throw new Error('Los encabezados del Excel no coinciden con el formato requerido.');
+  if (missingColumns.length) {
+    throw new Error(`Faltan encabezados obligatorios: ${missingColumns.join(', ')}`);
   }
 }
 
@@ -229,7 +234,7 @@ function renderPreview(rows) {
   if (!rows.length) {
     elements.previewBody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="${REQUIRED_COLUMNS.length}">Aun no se han cargado pedidos.</td>
+        <td colspan="6">Aun no se han cargado pedidos.</td>
       </tr>
     `;
     return;
@@ -241,10 +246,8 @@ function renderPreview(rows) {
       <tr>
         <td>${escapeHtml(row.CLIENTE)}</td>
         <td>${escapeHtml(row.CELULAR)}</td>
-        <td>${escapeHtml(row.DIRECCION)}</td>
         <td>${escapeHtml(row.PRODUCTO)}</td>
-        <td>${escapeHtml(row.PRECIO)}</td>
-        <td>${escapeHtml(row.DISTRITO)}</td>
+        <td>${escapeHtml(formatCurrency(row.PRECIO))}</td>
         <td>${escapeHtml(row['FECHA DE ENVIO'])}</td>
         <td>${escapeHtml(row.OBSERVACION)}</td>
       </tr>
@@ -285,6 +288,10 @@ function updateActionButton() {
 }
 
 function resetLoadedData() {
+  prepareForNewFile();
+}
+
+function prepareForNewFile() {
   state.rows = [];
   state.workbookSheets = 0;
   state.generatedPdf = null;
@@ -413,11 +420,11 @@ async function generatePdfCards() {
     const pageWidth = 210;
     const pageHeight = 297;
     const columns = 2;
-    const rowsPerPage = 2;
-    const horizontalGap = 8;
-    const verticalGap = 8;
-    const marginX = 12;
-    const marginY = 12;
+    const rowsPerPage = 4;
+    const horizontalGap = 6;
+    const verticalGap = 5;
+    const marginX = 8;
+    const marginY = 8;
     const cardWidth = (pageWidth - (marginX * 2) - (horizontalGap * (columns - 1))) / columns;
     const cardHeight = (pageHeight - (marginY * 2) - (verticalGap * (rowsPerPage - 1))) / rowsPerPage;
 
@@ -463,72 +470,130 @@ function waitForNextFrame() {
 }
 
 function drawCard(pdf, row, x, y, width, height) {
+  const pad = 4;
+  const headerHeight = 16;
+  const columnGap = 3;
+  const halfWidth = (width - (pad * 2) - columnGap) / 2;
+
   pdf.setDrawColor(173, 43, 39);
-  pdf.setLineWidth(0.55);
+  pdf.setLineWidth(0.45);
   pdf.rect(x, y, width, height);
 
   pdf.setDrawColor(173, 43, 39);
-  pdf.setLineWidth(1.1);
+  pdf.setLineWidth(0.9);
   pdf.line(x, y, x + width, y);
 
   if (state.logoDataUrl) {
     try {
-      pdf.addImage(state.logoDataUrl, 'PNG', x + 6, y + 5, 20, 20);
+      const logoBox = fitLogo(15, 11);
+      const logoX = x + pad + ((15 - logoBox.width) / 2);
+      const logoY = y + 2.5 + ((11 - logoBox.height) / 2);
+      pdf.addImage(state.logoDataUrl, 'PNG', logoX, logoY, logoBox.width, logoBox.height);
     } catch (error) {
       console.warn('No se pudo insertar el logo en el PDF.', error);
     }
   }
 
-  pdf.setTextColor(80, 27, 25);
+  const priceX = x + pad + 18;
+  const priceWidth = width - (pad * 2) - 18;
+  const priceCenterX = priceX + (priceWidth / 2);
+  pdf.setTextColor(120, 37, 33);
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10.2);
-  const companyLines = pdf.splitTextToSize('Mercado Central Express', width - 36);
-  pdf.text(companyLines, x + 30, y + 10);
+  pdf.setFontSize(6.1);
+  pdf.text('PRECIO TOTAL', priceCenterX, y + 5.4, { align: 'center' });
+
+  pdf.setTextColor(173, 43, 39);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(13.2);
+  pdf.text(formatCurrency(row.PRECIO), priceCenterX, y + 11.6, { align: 'center', maxWidth: priceWidth });
 
   pdf.setDrawColor(228, 215, 210);
-  pdf.setLineWidth(0.25);
-  pdf.line(x + 5, y + 28, x + width - 5, y + 28);
+  pdf.setLineWidth(0.2);
+  pdf.line(x + pad, y + headerHeight, x + width - pad, y + headerHeight);
 
-  const contentX = x + 6;
-  let cursorY = y + 35;
-
-  const fields = [
-    ['CLIENTE', row.CLIENTE],
-    ['CELULAR', row.CELULAR],
-    ['DIRECCION', row.DIRECCION],
-    ['PRODUCTO', row.PRODUCTO],
-    ['PRECIO', row.PRECIO],
-    ['DISTRITO', row.DISTRITO],
-    ['FECHA DE ENVIO', row['FECHA DE ENVIO']],
-    ['OBSERVACION', row.OBSERVACION],
-  ];
-
-  fields.forEach(([label, value], index) => {
-    cursorY = writeField(pdf, label, value || '-', contentX, cursorY, width - 12);
-
-    if (index < fields.length - 1) {
-      pdf.setDrawColor(242, 236, 233);
-      pdf.setLineWidth(0.2);
-      pdf.line(contentX, cursorY - 1.5, x + width - 6, cursorY - 1.5);
-    }
-  });
+  let cursorY = y + headerHeight + 4.5;
+  cursorY = writeFieldPair(pdf, 'CLIENTE', row.CLIENTE, 'CELULAR', row.CELULAR, x + pad, cursorY, halfWidth, columnGap);
+  cursorY = writeFieldPair(pdf, 'PRODUCTO', row.PRODUCTO, 'FECHA ENVIO', row['FECHA DE ENVIO'], x + pad, cursorY, halfWidth, columnGap);
+  writeObservationLine(pdf, row.OBSERVACION, x + pad, Math.min(cursorY + 1, y + height - 8), width - (pad * 2));
 }
 
-function writeField(pdf, label, value, x, y, maxWidth) {
+function writeFieldPair(pdf, leftLabel, leftValue, rightLabel, rightValue, x, y, columnWidth, columnGap) {
+  const rightX = x + columnWidth + columnGap;
+
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(7.1);
+  pdf.setFontSize(5.6);
   pdf.setTextColor(118, 52, 48);
-  pdf.text(label, x, y);
+  pdf.text(leftLabel, x, y);
+  pdf.text(rightLabel, rightX, y);
 
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(8.8);
+  pdf.setFontSize(7.2);
   pdf.setTextColor(42, 42, 42);
 
-  const textLines = pdf.splitTextToSize(value, maxWidth);
-  const valueY = y + 4.2;
-  pdf.text(textLines, x, valueY);
+  const leftText = pdf.splitTextToSize(getDisplayValue(leftValue), columnWidth);
+  const rightText = pdf.splitTextToSize(getDisplayValue(rightValue), columnWidth);
+  const maxLines = Math.max(leftText.length, rightText.length, 1);
+  const valueY = y + 3.2;
 
-  return valueY + (textLines.length * 3.9) + 2.6;
+  pdf.text(leftText, x, valueY);
+  pdf.text(rightText, rightX, valueY);
+
+  const nextY = valueY + (maxLines * 3.2) + 2;
+  pdf.setDrawColor(242, 236, 233);
+  pdf.setLineWidth(0.18);
+  pdf.line(x, nextY - 1, rightX + columnWidth, nextY - 1);
+
+  return nextY + 2;
+}
+
+function writeObservationLine(pdf, value, x, y, width) {
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(5.6);
+  pdf.setTextColor(118, 52, 48);
+  pdf.text('OBSERVACION', x, y);
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(7.1);
+  pdf.setTextColor(42, 42, 42);
+  const singleLine = pdf.splitTextToSize(getDisplayValue(value), width)[0] || '-';
+  pdf.text(singleLine, x, y + 3.2, { maxWidth: width });
+}
+
+function getDisplayValue(value) {
+  return value && String(value).trim() ? String(value).trim() : '-';
+}
+
+function fitLogo(maxWidth, maxHeight) {
+  const ratio = LOGO_ASPECT_RATIO;
+  let width = maxWidth;
+  let height = width / ratio;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * ratio;
+  }
+
+  return { width, height };
+}
+
+function formatCurrency(value) {
+  const raw = String(value || '').trim();
+  if (!raw) {
+    return 'S/. 0.00';
+  }
+
+  const normalized = raw
+    .replace(/s\/?\.?/gi, '')
+    .replace(/soles?/gi, '')
+    .replace(/,/g, '.')
+    .replace(/[^0-9.\-]/g, '');
+
+  const parsed = Number.parseFloat(normalized);
+  if (Number.isNaN(parsed)) {
+    return `S/. ${raw}`;
+  }
+
+  return `S/. ${parsed.toFixed(2)}`;
 }
 
 function downloadGeneratedPdf() {
@@ -540,6 +605,11 @@ function downloadGeneratedPdf() {
   state.generatedPdf.save('tarjetas-mercado-central-express.pdf');
   announce('La descarga del PDF ha comenzado.', 'success', true, 'Descarga iniciada');
 }
+
+
+
+
+
 
 
 
