@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mercado Central Express | CSV WhatsApp</title>
+    <meta
+      name="description"
+      content="Genera archivos CSV para listas de difusión de WhatsApp a partir de texto pegado desde Excel."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="toast-stack" id="csvToastStack" aria-live="polite" aria-atomic="true"></div>
+      <div class="sr-only" id="csvSrStatus" aria-live="polite"></div>
+
+      <header class="topbar reveal reveal-delay-1">
+        <div class="topbar-inner">
+          <div class="brand-row">
+            <div class="brand-chip">
+              <img src="assets/logo.png" alt="Logo de Mercado Central Express" class="brand-logo" />
+            </div>
+            <div class="brand-copy">
+              <h1>Mercado Central Express</h1>
+              <p>Generar CSV para listas de difusión de WhatsApp</p>
+            </div>
+          </div>
+
+          <nav class="module-nav" aria-label="Modulos internos">
+            <a class="module-link" href="index.html">
+              <span class="module-link-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M5 4h14v16H5z"></path>
+                  <path d="M8 8h8"></path>
+                  <path d="M8 12h8"></path>
+                  <path d="M8 16h5"></path>
+                </svg>
+              </span>
+              <span>Tarjetas PDF</span>
+            </a>
+            <a class="module-link is-active" href="csv-whatsapp.html">
+              <span class="module-link-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M5 4h14v16H5z"></path>
+                  <path d="M8 9h8"></path>
+                  <path d="M8 13h5"></path>
+                  <path d="M15 13l2 2 3-4"></path>
+                </svg>
+              </span>
+              <span>CSV WhatsApp</span>
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="workspace workspace-csv reveal reveal-delay-2" data-whatsapp-csv-app>
+        <section class="sidebar-card csv-sidebar">
+          <div class="section-head compact-head">
+            <div>
+              <span class="section-kicker">Entrada</span>
+              <h2>Pega tu lista</h2>
+            </div>
+            <p>Soporta texto con nombre y teléfono, solo teléfono, solo nombre, con o sin encabezados.</p>
+          </div>
+
+          <label class="field-label" for="csvPasteInput">Texto copiado desde Excel</label>
+          <textarea
+            id="csvPasteInput"
+            class="paste-input"
+            placeholder="Pega aquí columnas copiadas desde Excel..."
+            spellcheck="false"
+          ></textarea>
+
+          <div class="actions compact-actions csv-actions">
+            <button id="csvProcessBtn" class="btn btn-primary">Procesar lista</button>
+            <button id="csvDownloadBtn" class="btn btn-secondary" hidden>Descargar CSV</button>
+          </div>
+
+          <div class="mini-stats">
+            <article class="mini-stat">
+              <span>Contactos</span>
+              <strong id="csvContactCount">0</strong>
+            </article>
+            <article class="mini-stat">
+              <span>Excluidos</span>
+              <strong id="csvSkippedCount">0</strong>
+            </article>
+          </div>
+
+          <div class="format-note">
+            <span>Salida CSV</span>
+            <code>name | Phone number</code>
+          </div>
+        </section>
+
+        <section class="content-card csv-content">
+          <div class="section-head preview-head">
+            <div>
+              <span class="section-kicker">Vista previa</span>
+              <h2>Contactos preparados</h2>
+            </div>
+            <div class="preview-note">Formato final para WhatsApp</div>
+          </div>
+
+          <div class="table-wrapper csv-table-wrapper">
+            <table class="preview-table csv-preview-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone number</th>
+                </tr>
+              </thead>
+              <tbody id="csvPreviewBody">
+                <tr class="empty-row">
+                  <td colspan="2">Aun no se han procesado contactos.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="csv-whatsapp.js"></script>
+  </body>
+</html>
+
+
