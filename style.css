@@ -674,6 +674,11 @@ code {
   background: linear-gradient(135deg, #267ac0, #1f4fbc);
 }
 
+.wa-send-btn.is-sent:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(10px);

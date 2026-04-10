@@ -479,12 +479,13 @@ function renderWhatsappPreview(contacts) {
       const sentClass = isSent ? ' is-sent' : '';
       const sentLabel = isSent ? 'Enviado' : 'Enviar por WhatsApp';
 
-      return `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${escapeHtml(contact.name)}</td>
-          <td>${escapeHtml(formatWhatsappPhone(contact.phone))}</td>
-          <td class="wa-action-cell">
+      const actionCell = isSent
+        ? `
+            <button class="btn btn-whatsapp wa-send-btn${sentClass}" type="button" disabled aria-disabled="true">
+              ${sentLabel}
+            </button>
+          `
+        : `
             <a
               class="btn btn-whatsapp wa-send-btn${sentClass}"
               href="${link}"
@@ -494,6 +495,15 @@ function renderWhatsappPreview(contacts) {
             >
               ${sentLabel}
             </a>
+          `;
+
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${escapeHtml(contact.name)}</td>
+          <td>${escapeHtml(formatWhatsappPhone(contact.phone))}</td>
+          <td class="wa-action-cell">
+            ${actionCell}
           </td>
         </tr>
       `;
