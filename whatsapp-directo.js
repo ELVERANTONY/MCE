@@ -12,20 +12,19 @@ const WA_EMOJI = {
 };
 
 const WHATSAPP_MESSAGE = [
-  `Hola ${WA_EMOJI.smile} ¿Cómo estás?`,
-  `Gracias por confiar en nosotros ${WA_EMOJI.hands}`,
+  `Hola ${WA_EMOJI.smile} *Gracias por confiar en nosotros* ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
   '',
-  'Como nos compraste tu pack de bolsas con succionador eléctrico, o usas aspiradora, ahora puedes llevar bolsas por tamaño, según lo que necesites, sin comprar el pack completo.',
+  'Como nos compraste tu *pack de bolsas con succionador eléctrico*, o usas aspiradora, ahora puedes llevar *bolsas por tamaño*, según lo que necesites, *sin comprar el pack completo*.',
   '',
-  `Disponibles en 3, 6 o 12 unidades, también para camisas y sacos ${WA_EMOJI.shirt}`,
+  `Disponibles en *3, 6 o 12 unidades*, también para *camisas y sacos* ${WA_EMOJI.shirt}`,
   '',
-  `${WA_EMOJI.money} Precio especial por cantidad`,
+  `${WA_EMOJI.money} *Precio especial por cantidad*`,
   '',
-  `${WA_EMOJI.point} Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+  `${WA_EMOJI.point} *Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
   '',
   'https://elverantony.github.io/mercadocentralexpress/#/catalogo',
   '',
-  `${WA_EMOJI.point} Escríbenos y te damos más detalles ${WA_EMOJI.writing}`,
+  `${WA_EMOJI.point} *Escríbenos y te damos más detalles* ${WA_EMOJI.writing}`,
 ].join('\n');
 
 const waState = {
