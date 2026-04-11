@@ -5,24 +5,27 @@ const WA_EMOJI = {
   smile: String.fromCodePoint(0x1f60a),
   hands: String.fromCodePoint(0x1f64c),
   shirt: String.fromCodePoint(0x1f455),
-  sparkle: String.fromCodePoint(0x2728),
+  money: String.fromCodePoint(0x1f4b8),
   point: String.fromCodePoint(0x1f449),
   down: String.fromCodePoint(0x1f447),
+  writing: String.fromCodePoint(0x270d, 0xfe0f),
 };
 
 const WHATSAPP_MESSAGE = [
-  `Hola ${WA_EMOJI.smile} ¡Muchas gracias por tu confianza!`,
-  `Como nos compraste bolsas de sellado al vacío para ropa con nuestro succionador eléctrico o tienes aspiradora, por eso queremos darte una opción más práctica ${WA_EMOJI.hands}`,
+  `Hola ${WA_EMOJI.smile} ¿Cómo estás?`,
+  `Gracias por confiar en nosotros ${WA_EMOJI.hands}`,
   '',
-  'Ahora puedes comprar bolsas por tamaño, sin necesidad de adquirir nuevamente el pack completo.',
+  'Como nos compraste tu pack de bolsas con succionador eléctrico, o usas aspiradora, ahora puedes llevar bolsas por tamaño, según lo que necesites, sin comprar el pack completo.',
   '',
-  `Tenemos packs de 3, 6 o 12 unidades por medida, además de bolsas para camisas y sacos ${WA_EMOJI.shirt}`,
+  `Disponibles en 3, 6 o 12 unidades, también para camisas y sacos ${WA_EMOJI.shirt}`,
   '',
-  `${WA_EMOJI.sparkle} Mientras más bolsas lleves, accedes a un mejor precio`,
+  `${WA_EMOJI.money} Precio especial por cantidad`,
   '',
-  `${WA_EMOJI.point} Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp 👇👇👇👇`,
+  `${WA_EMOJI.point} Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
   '',
-  'https://elverantony.github.io/mercadocentralexpress/#/catalogo.',
+  'https://elverantony.github.io/mercadocentralexpress/#/catalogo',
+  '',
+  `${WA_EMOJI.point} Escríbenos y te damos más detalles ${WA_EMOJI.writing}`,
 ].join('\n');
 
 const waState = {
