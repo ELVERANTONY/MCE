@@ -12,7 +12,8 @@ const WA_EMOJI = {
 };
 
 const WHATSAPP_MESSAGE = [
-  `Hola ${WA_EMOJI.smile} *Gracias por confiar en nosotros* ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+  `Hola ${WA_EMOJI.smile} *Somos de Mercado Central Express*`,
+  `*Gracias por confiar en nosotros* ${WA_EMOJI.hands}${WA_EMOJI.hands}${WA_EMOJI.hands}`,
   '',
   'Como nos compraste tu *pack de bolsas con succionador eléctrico*, o usas aspiradora, ahora puedes llevar *bolsas por tamaño*, según lo que necesites, *sin comprar el pack completo*.',
   '',
