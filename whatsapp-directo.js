@@ -20,9 +20,9 @@ const WHATSAPP_MESSAGE = [
   '',
   `${WA_EMOJI.sparkle} Mientras más bolsas lleves, accedes a un mejor precio`,
   '',
-  `${WA_EMOJI.point} Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp ${WA_EMOJI.down}`,
+  `${WA_EMOJI.point} Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp 👇👇👇👇`,
   '',
-  'https://elverantony.github.io/mercadocentralexpress/#/catalogo',
+  'https://elverantony.github.io/mercadocentralexpress/#/catalogo.',
 ].join('\n');
 
 const waState = {
