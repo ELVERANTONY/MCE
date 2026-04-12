@@ -1,4 +1,4 @@
-const WA_CACHE_KEY = 'mce_whatsapp_pinturas_cache_v1';
+const WA_CACHE_KEY = 'mce_whatsapp_pinturas_cache_v2';
 const WA_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const WA_EMOJI = {
@@ -29,7 +29,7 @@ const WHATSAPP_MESSAGE = [
   '',
   `${WA_EMOJI.point} *Elige tu pack favorito y continúa tu pedido fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
   '',
-  'https://elverantony.github.io/mercadocentralexpress1/#/catalogo',
+  'https://elverantony.github.io/mercadocentralexpress1/',
 ].join('\n');
 
 const waState = {
@@ -173,7 +173,7 @@ function restoreWhatsappCache() {
 
 function persistWhatsappCache() {
   const payload = {
-    version: 1,
+    version: 2,
     expiresAt: Date.now() + WA_CACHE_TTL_MS,
     rawInput: waElements.input.value || '',
     contacts: waState.contacts,
@@ -259,7 +259,7 @@ function normalizeSentPhones(value) {
 
   const sentPhones = {};
   Object.entries(value).forEach(([phone, stamp]) => {
-    if (!/^519\\d{8}$/.test(phone)) {
+    if (!/^519\d{8}$/.test(phone)) {
       return;
     }
 
@@ -289,7 +289,7 @@ function cleanupSentPhones() {
 }
 
 function markPhoneAsSent(phone) {
-  if (!/^519\\d{8}$/.test(phone)) {
+  if (!/^519\d{8}$/.test(phone)) {
     return;
   }
 
@@ -300,9 +300,9 @@ function markPhoneAsSent(phone) {
 
 function parseClipboardText(rawText) {
   const lines = rawText
-    .replace(/\\r\\n/g, '\\n')
-    .replace(/\\r/g, '\\n')
-    .split('\\n')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
 
@@ -341,14 +341,13 @@ function parseClipboardText(rawText) {
 }
 
 function parseLineColumns(line) {
-  if (line.includes('\\t')) {
-    return line.split('\\t').map((part) => part.trim()).filter((part) => part !== '');
+  if (line.includes('\t')) {
+    return line.split('\t').map((part) => part.trim()).filter((part) => part !== '');
   }
 
-  // Some sources paste aligned columns using multiple spaces instead of TABs.
-  if (/\\s{2,}/.test(line)) {
+  if (/\s{2,}/.test(line)) {
     return line
-      .split(/\\s{2,}/)
+      .split(/\s{2,}/)
       .map((part) => part.trim())
       .filter((part) => part !== '');
   }
@@ -361,8 +360,6 @@ function parseLineColumns(line) {
     return line.split(',').map((part) => part.trim());
   }
 
-  // Fallback: Excel sometimes pastes as "NAME +51 9xx..." separated by single spaces.
-  // Try extracting a phone-like chunk from the line and treat the rest as name.
   const extracted = extractPhoneFromLine(line);
   if (extracted.phone) {
     return [extracted.name, extracted.phone].filter((value) => value !== '');
@@ -377,8 +374,7 @@ function extractPhoneFromLine(line) {
     return { name: '', phone: '' };
   }
 
-  // Grab candidate sequences containing digits and separators, then validate via normalizePeruPhone.
-  const candidates = raw.match(/[+]?\\d[\\d\\s().-]{6,}\\d/g) || [];
+  const candidates = raw.match(/[+]?\d[\d\s().-]{6,}\d/g) || [];
 
   for (const candidate of candidates) {
     const phone = normalizePeruPhone(candidate);
@@ -394,14 +390,7 @@ function extractPhoneFromLine(line) {
 }
 
 function detectHeaderRow(columns) {
-  const normalized = columns.map((value) =>
-    value
-      .toLowerCase()
-      .trim()
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-  );
-
+  const normalized = columns.map((value) => removeDiacritics(value).toLowerCase().trim());
   return normalized.some((value) => {
     return (
       value === 'name' ||
@@ -412,6 +401,12 @@ function detectHeaderRow(columns) {
       value === 'celular'
     );
   });
+}
+
+function removeDiacritics(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 function normalizeContactRow(columns) {
@@ -458,7 +453,7 @@ function normalizeContactRow(columns) {
 }
 
 function normalizePeruPhone(value) {
-  const digits = String(value || '').replace(/\\D/g, '');
+  const digits = String(value || '').replace(/\D/g, '');
   if (!digits) {
     return '';
   }
@@ -478,14 +473,14 @@ function normalizePeruPhone(value) {
     }
   }
 
-  return /^519\\d{8}$/.test(normalized) ? normalized : '';
+  return /^519\d{8}$/.test(normalized) ? normalized : '';
 }
 
 function cleanName(value) {
   return String(value || '')
     .normalize('NFKC')
-    .replace(/[^\\p{L}\\p{N}\\s]/gu, ' ')
-    .replace(/\\s+/g, ' ')
+    .replace(/[^0-9A-Za-zÀ-ÿÑñ\s]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
