@@ -361,7 +361,36 @@ function parseLineColumns(line) {
     return line.split(',').map((part) => part.trim());
   }
 
+  // Fallback: Excel sometimes pastes as "NAME +51 9xx..." separated by single spaces.
+  // Try extracting a phone-like chunk from the line and treat the rest as name.
+  const extracted = extractPhoneFromLine(line);
+  if (extracted.phone) {
+    return [extracted.name, extracted.phone].filter((value) => value !== '');
+  }
+
   return [line.trim()];
+}
+
+function extractPhoneFromLine(line) {
+  const raw = String(line || '').trim();
+  if (!raw) {
+    return { name: '', phone: '' };
+  }
+
+  // Grab candidate sequences containing digits and separators, then validate via normalizePeruPhone.
+  const candidates = raw.match(/[+]?\\d[\\d\\s().-]{6,}\\d/g) || [];
+
+  for (const candidate of candidates) {
+    const phone = normalizePeruPhone(candidate);
+    if (!phone) {
+      continue;
+    }
+
+    const name = cleanName(raw.replace(candidate, ' '));
+    return { name, phone };
+  }
+
+  return { name: cleanName(raw), phone: '' };
 }
 
 function detectHeaderRow(columns) {
