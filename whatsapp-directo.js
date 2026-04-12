@@ -25,7 +25,6 @@ const WHATSAPP_MESSAGE = [
   '',
   'https://elverantony.github.io/mercadocentralexpress/#/catalogo',
   '',
-  `${WA_EMOJI.point} *Escríbenos y te damos más detalles* ${WA_EMOJI.writing}`,
 ].join('\n');
 
 const waState = {
