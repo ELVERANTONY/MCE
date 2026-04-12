@@ -29,7 +29,7 @@ const WHATSAPP_MESSAGE = [
   '',
   `${WA_EMOJI.point} *Elige tu pack favorito y continúa tu pedido fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
   '',
-  'https://elverantony.github.io/mercadocentralexpress1/',
+  'https://elverantony.github.io/mercadocentralexpress1/#/catalogo',
 ].join('\n');
 
 const waState = {
@@ -345,6 +345,14 @@ function parseLineColumns(line) {
     return line.split('\\t').map((part) => part.trim()).filter((part) => part !== '');
   }
 
+  // Some sources paste aligned columns using multiple spaces instead of TABs.
+  if (/\\s{2,}/.test(line)) {
+    return line
+      .split(/\\s{2,}/)
+      .map((part) => part.trim())
+      .filter((part) => part !== '');
+  }
+
   if (line.includes(';')) {
     return line.split(';').map((part) => part.trim());
   }
@@ -622,6 +630,10 @@ function fallbackCopyText(text) {
 }
 
 function encodeWhatsappTextUtf8(text) {
+  if (typeof TextEncoder === 'undefined') {
+    return encodeURIComponent(text);
+  }
+
   const bytes = new TextEncoder().encode(text);
   let encoded = '';
 
