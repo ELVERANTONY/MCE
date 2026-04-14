@@ -239,7 +239,12 @@ function restoreWhatsappCache() {
   updateWhatsappSummary();
 
   if (waState.contacts.length) {
-    announceWhatsapp('Se restauro tu lista guardada en cache (24 horas).', 'success', true, 'Cache recuperada');
+    announceWhatsapp(
+      'Se restauro tu lista guardada, ten en cuenta que se perderá en 24 horas.',
+      'success',
+      true,
+      'Lista recuperada'
+    );
   }
 }
 
@@ -259,7 +264,7 @@ function persistWhatsappCache() {
     waState.hasNotifiedCacheError = false;
   } catch (_error) {
     if (!waState.hasNotifiedCacheError) {
-      announceWhatsapp('No fue posible guardar cache local en este navegador.', 'error', true, 'Cache no disponible');
+      announceWhatsapp('No fue posible guardar tu lista local en este navegador.', 'error', true, 'Guardado no disponible');
       waState.hasNotifiedCacheError = true;
     }
   }
