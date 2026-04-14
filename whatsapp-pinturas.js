@@ -148,19 +148,22 @@ function handleWhatsappInputChange() {
 }
 
 function handlePreviewActionClick(event) {
-  const actionButton = event.target.closest('[data-wa-phone]');
-  if (!actionButton) {
+  const actionLink = event.target.closest('a[data-wa-phone]');
+  if (!actionLink) {
     return;
   }
 
-  const phone = String(actionButton.dataset.waPhone || '').trim();
+  event.preventDefault();
+
+  const phone = String(actionLink.dataset.waPhone || '').trim();
   if (!phone) {
     return;
   }
 
   markPhoneAsSent(phone);
   const message = getMessageForPhone(phone);
-  copyWhatsappMessageToClipboard(message);
+  const whatsappUrl = String(actionLink.getAttribute('href') || '').trim();
+  openWhatsappOrCopyFallback(whatsappUrl, message);
 }
 
 function processWhatsappList() {
@@ -719,20 +722,60 @@ function escapeHtml(value) {
   return div.innerHTML;
 }
 
-async function copyWhatsappMessageToClipboard(message) {
+async function copyWhatsappMessageToClipboard(message, options = {}) {
   const textToCopy = String(message || '');
+  const successTitle = options.successTitle || 'Mensaje copiado';
+  const successMessage = options.successMessage || 'Mensaje copiado. Solo pega y envia en WhatsApp.';
   try {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
       await navigator.clipboard.writeText(textToCopy);
-      announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
+      announceWhatsapp(successMessage, 'success', true, successTitle);
       return;
     }
 
     fallbackCopyText(textToCopy);
-    announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
+    announceWhatsapp(successMessage, 'success', true, successTitle);
   } catch (_error) {
     announceWhatsapp('No se pudo copiar automatico. Copialo manualmente si tu navegador lo bloquea.', 'error', true, 'Copia bloqueada');
   }
+}
+
+function openWhatsappOrCopyFallback(url, message) {
+  const targetUrl = String(url || '').trim();
+  if (!targetUrl) {
+    return;
+  }
+
+  // Prefer opening WhatsApp without touching the clipboard.
+  if (tryOpenNewTab(targetUrl)) {
+    return;
+  }
+
+  // If the popup is blocked, most browsers still allow same-tab navigation.
+  try {
+    window.location.assign(targetUrl);
+    return;
+  } catch (_error) {
+    // Fall back to clipboard only when WhatsApp cannot be opened at all.
+  }
+
+  copyWhatsappMessageToClipboard(message, {
+    successTitle: 'WhatsApp bloqueado',
+    successMessage: 'No se pudo abrir WhatsApp automaticamente. Mensaje copiado para que lo pegues y envies.',
+  });
+}
+
+function tryOpenNewTab(url) {
+  try {
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (win) {
+      win.opener = null;
+      return true;
+    }
+  } catch (_error) {
+    // ignored
+  }
+  return false;
 }
 
 function fallbackCopyText(text) {

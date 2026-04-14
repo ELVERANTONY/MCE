@@ -837,20 +837,32 @@ code {
   }
 
   .module-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.25rem;
-    gap: 0.5rem;
+    /* On mobile we prefer visibility over horizontal scrolling: keep the active tool always in view. */
+    flex-wrap: wrap;
+    overflow: visible;
+    padding-bottom: 0;
+    gap: 0.55rem;
+    align-items: stretch;
   }
 
   .module-link {
-    flex: 0 0 auto;
-    font-size: 0.8rem;
-    padding: 0.5rem 0.72rem;
-    min-height: 38px;
-    white-space: nowrap;
+    flex: 1 1 calc(50% - 0.55rem);
+    justify-content: center;
+    text-align: center;
+    font-size: 0.78rem;
+    padding: 0.55rem 0.6rem;
+    min-height: 44px;
+    white-space: normal;
+    line-height: 1.12;
+  }
+
+  .module-link span:last-child {
+    display: block;
+  }
+
+  .module-link.is-active {
+    outline: 2px solid rgba(255, 255, 255, 0.82);
+    outline-offset: 2px;
   }
 
   .workspace,
