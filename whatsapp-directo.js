@@ -1,5 +1,7 @@
-const WA_CACHE_KEY = 'mce_whatsapp_direct_cache_v1';
+const WA_CACHE_KEY = 'mce_whatsapp_direct_cache_v2';
 const WA_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+const CATALOG_URL = 'https://elverantony.github.io/mercadocentralexpress/#/catalogo';
 
 const WA_EMOJI = {
   smile: String.fromCodePoint(0x1f60a),
@@ -11,26 +13,90 @@ const WA_EMOJI = {
   writing: String.fromCodePoint(0x270d, 0xfe0f),
 };
 
-const WHATSAPP_MESSAGE = [
-  `Hola ${WA_EMOJI.smile} *Somos de Mercado Central Express*`,
-  `*Gracias por confiar en nosotros* ${WA_EMOJI.hands}${WA_EMOJI.hands}${WA_EMOJI.hands}`,
-  '',
-  'Como nos compraste tu *pack de bolsas con succionador eléctrico*, o usas aspiradora, ahora puedes llevar *bolsas por tamaño*, según lo que necesites, *sin comprar el pack completo*.',
-  '',
-  `Disponibles en *3, 6 o 12 unidades*, también para *camisas y sacos* ${WA_EMOJI.shirt}`,
-  '',
-  `${WA_EMOJI.money} *Precio especial por cantidad*`,
-  '',
-  `${WA_EMOJI.point} *Puedes ver todas las opciones aquí, elegir lo que necesites y continuar tu compra fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
-  '',
-  'https://elverantony.github.io/mercadocentralexpress/#/catalogo',
-  '',
-].join('\n');
+const BAGS_TEMPLATES = [
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Vimos que anteriormente habías comprado *bolsas al vacío*, por eso ahora puedes llevar *bolsas por tamaño* sin comprar el pack completo ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+      '',
+      `Disponibles en *3, 6 o 12 unidades*, también para *camisas y sacos* ${WA_EMOJI.shirt}`,
+      '',
+      `${WA_EMOJI.money} *Precio especial por cantidad*`,
+      '',
+      `${WA_EMOJI.point} Elige aquí y compra por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      CATALOG_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Te escribimos porque ya compraste *bolsas al vacío* con nosotros ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+      `Ahora puedes pedir *solo las bolsas por tamaño*, sin llevar el pack completo`,
+      '',
+      `Tenemos opciones en *3, 6 y 12 unidades* ${WA_EMOJI.shirt}`,
+      '',
+      `${WA_EMOJI.money} *Mejor precio por cantidad*`,
+      '',
+      `${WA_EMOJI.point} Mira las opciones y pide por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      CATALOG_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Como ya usas *bolsas al vacío*, ahora puedes comprar *por tamaño* según lo que necesites ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+      '',
+      `✓ Sin comprar pack completo`,
+      `✓ Opciones en *3, 6 y 12 unidades*`,
+      `✓ También para *camisas y sacos* ${WA_EMOJI.shirt}`,
+      '',
+      `${WA_EMOJI.money} *Precio especial*`,
+      '',
+      `${WA_EMOJI.point} Revisa aquí y compra directo por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      CATALOG_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Tenemos una opción más práctica para ti ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+      `Ahora puedes llevar *bolsas al vacío por tamaño*, según lo que necesites`,
+      '',
+      `Disponibles en *packs de 3, 6 y 12 unidades* ${WA_EMOJI.shirt}`,
+      '',
+      `${WA_EMOJI.money} *Descuento por cantidad*`,
+      '',
+      `${WA_EMOJI.point} Elige tu opción aquí y continúa por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      CATALOG_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Queríamos contarte que ahora puedes comprar *bolsas al vacío por separado*, sin adquirir el pack completo ${WA_EMOJI.hands}${WA_EMOJI.hands}`,
+      '',
+      `✓ Diferentes tamaños`,
+      `✓ Packs de *3, 6 y 12 unidades*`,
+      `✓ Para ropa, *camisas y sacos* ${WA_EMOJI.shirt}`,
+      '',
+      `${WA_EMOJI.money} *Precio especial por cantidad*`,
+      '',
+      `${WA_EMOJI.point} Mira todo aquí y compra por WhatsApp ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      CATALOG_URL,
+    ].join('\n'),
+];
 
 const waState = {
   contacts: [],
   skippedRows: 0,
   sentPhones: {},
+  messageTemplateByPhone: {},
   hasNotifiedCacheError: false,
 };
 
@@ -85,7 +151,8 @@ function handlePreviewActionClick(event) {
   }
 
   markPhoneAsSent(phone);
-  copyWhatsappMessageToClipboard();
+  const message = getMessageForPhone(phone);
+  copyWhatsappMessageToClipboard(message);
 }
 
 function processWhatsappList() {
@@ -135,6 +202,7 @@ function resetWhatsappResults(shouldClearCache) {
   waState.contacts = [];
   waState.skippedRows = 0;
   waState.sentPhones = {};
+  waState.messageTemplateByPhone = {};
   renderWhatsappPreview([]);
   updateWhatsappSummary();
 
@@ -155,6 +223,7 @@ function restoreWhatsappCache() {
   waElements.input.value = cachedInput;
   waState.skippedRows = cachedSkipped;
   waState.sentPhones = normalizeSentPhones(payload.sentPhones);
+  waState.messageTemplateByPhone = normalizeTemplateByPhone(payload.messageTemplateByPhone);
   waState.contacts = normalizeCachedContacts(payload.contacts);
 
   cleanupSentPhones();
@@ -168,12 +237,13 @@ function restoreWhatsappCache() {
 
 function persistWhatsappCache() {
   const payload = {
-    version: 1,
+    version: 2,
     expiresAt: Date.now() + WA_CACHE_TTL_MS,
     rawInput: waElements.input.value || '',
     contacts: waState.contacts,
     skippedRows: waState.skippedRows,
     sentPhones: waState.sentPhones,
+    messageTemplateByPhone: waState.messageTemplateByPhone,
   };
 
   try {
@@ -281,6 +351,16 @@ function cleanupSentPhones() {
   });
 
   waState.sentPhones = cleaned;
+
+  const cleanedTemplates = {};
+  Object.entries(waState.messageTemplateByPhone).forEach(([phone, templateIndex]) => {
+    if (!phoneSet.has(phone)) {
+      return;
+    }
+
+    cleanedTemplates[phone] = templateIndex;
+  });
+  waState.messageTemplateByPhone = cleanedTemplates;
 }
 
 function markPhoneAsSent(phone) {
@@ -459,7 +539,8 @@ function renderWhatsappPreview(contacts) {
   waElements.previewBody.innerHTML = contacts
     .slice(0, 300)
     .map((contact, index) => {
-      const link = buildWhatsappLink(contact.phone);
+      const message = getMessageForContact(contact);
+      const link = buildWhatsappLink(contact.phone, message);
       const isSent = Boolean(waState.sentPhones[contact.phone]);
       const sentClass = isSent ? ' is-sent' : '';
       const sentLabel = isSent ? 'Enviado' : 'Enviar por WhatsApp';
@@ -496,8 +577,8 @@ function renderWhatsappPreview(contacts) {
     .join('');
 }
 
-function buildWhatsappLink(phone) {
-  const encodedText = encodeWhatsappTextUtf8(WHATSAPP_MESSAGE);
+function buildWhatsappLink(phone, message) {
+  const encodedText = encodeWhatsappTextUtf8(String(message || ''));
   const encodedPhone = encodeURIComponent(phone);
   return `https://api.whatsapp.com/send?phone=${encodedPhone}&text=${encodedText}&type=phone_number&app_absent=0`;
 }
@@ -587,15 +668,16 @@ function escapeHtml(value) {
   return div.innerHTML;
 }
 
-async function copyWhatsappMessageToClipboard() {
+async function copyWhatsappMessageToClipboard(message) {
+  const textToCopy = String(message || '');
   try {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      await navigator.clipboard.writeText(WHATSAPP_MESSAGE);
+      await navigator.clipboard.writeText(textToCopy);
       announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
       return;
     }
 
-    fallbackCopyText(WHATSAPP_MESSAGE);
+    fallbackCopyText(textToCopy);
     announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
   } catch (_error) {
     announceWhatsapp('No se pudo copiar automatico. Copialo manualmente si tu navegador lo bloquea.', 'error', true, 'Copia bloqueada');
@@ -616,6 +698,10 @@ function fallbackCopyText(text) {
 }
 
 function encodeWhatsappTextUtf8(text) {
+  if (typeof TextEncoder === 'undefined') {
+    return encodeURIComponent(text);
+  }
+
   const bytes = new TextEncoder().encode(text);
   let encoded = '';
 
@@ -624,4 +710,92 @@ function encodeWhatsappTextUtf8(text) {
   });
 
   return encoded;
+}
+
+function getMessageForContact(contact) {
+  const phone = contact.phone;
+  const firstName = getValidFirstName(contact.name);
+  const greeting = firstName
+    ? `Hola ${WA_EMOJI.smile} ${firstName}, somos de Mercado Central Express`
+    : `Hola ${WA_EMOJI.smile}, somos de Mercado Central Express`;
+
+  let templateIndex = waState.messageTemplateByPhone[phone];
+  if (!Number.isInteger(templateIndex) || templateIndex < 0 || templateIndex >= BAGS_TEMPLATES.length) {
+    templateIndex = pickRandomIndex(BAGS_TEMPLATES.length);
+    waState.messageTemplateByPhone[phone] = templateIndex;
+  }
+
+  return BAGS_TEMPLATES[templateIndex]({ greeting });
+}
+
+function getMessageForPhone(phone) {
+  const contact = waState.contacts.find((item) => item.phone === phone);
+  if (!contact) {
+    return '';
+  }
+  return getMessageForContact(contact);
+}
+
+function pickRandomIndex(maxExclusive) {
+  const max = Math.max(1, Number(maxExclusive) || 1);
+
+  try {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+  } catch (_error) {
+    // ignore
+  }
+
+  return Math.floor(Math.random() * max);
+}
+
+function getValidFirstName(fullName) {
+  const cleaned = cleanName(fullName);
+  if (!cleaned) {
+    return '';
+  }
+
+  const lowered = cleaned.toLowerCase();
+  if (lowered.startsWith('cliente ')) {
+    return '';
+  }
+
+  if (/\d/.test(cleaned)) {
+    return '';
+  }
+
+  const token = cleaned.split(' ')[0] || '';
+  if (token.length < 2) {
+    return '';
+  }
+
+  return token.charAt(0).toUpperCase() + token.slice(1);
+}
+
+function normalizeTemplateByPhone(value) {
+  if (!value || typeof value !== 'object') {
+    return {};
+  }
+
+  const out = {};
+  Object.entries(value).forEach(([phone, templateIndex]) => {
+    if (!/^519\d{8}$/.test(phone)) {
+      return;
+    }
+
+    if (!Number.isInteger(templateIndex)) {
+      return;
+    }
+
+    if (templateIndex < 0 || templateIndex >= BAGS_TEMPLATES.length) {
+      return;
+    }
+
+    out[phone] = templateIndex;
+  });
+
+  return out;
 }
