@@ -1,11 +1,17 @@
-const WA_CACHE_KEY = 'mce_whatsapp_pinturas_cache_v2';
+const WA_CACHE_KEY = 'mce_whatsapp_pinturas_cache_v3';
 const WA_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+const PAINTS_URL = 'https://elverantony.github.io/mercadocentralexpress1/';
 
 const WA_EMOJI = {
   smile: String.fromCodePoint(0x1f60a),
   sparkleHeart: String.fromCodePoint(0x1f496),
   sparkles: String.fromCodePoint(0x2728),
   palette: String.fromCodePoint(0x1f3a8),
+  yogaWoman: String.fromCodePoint(0x1f9d8, 0x200d, 0x2640, 0xfe0f),
+  star: String.fromCodePoint(0x1f31f),
+  puzzle: String.fromCodePoint(0x1f9e9),
+  target: String.fromCodePoint(0x1f3af),
   moneyBag: String.fromCodePoint(0x1f4b0),
   truck: String.fromCodePoint(0x1f69a),
   cash: String.fromCodePoint(0x1f4b5),
@@ -13,29 +19,92 @@ const WA_EMOJI = {
   down: String.fromCodePoint(0x1f447),
 };
 
-const WHATSAPP_MESSAGE = [
-  `Hola ${WA_EMOJI.smile} *Somos de Mercado Central Express*`,
-  '',
-  `*Tenemos algo especial para ti* ${WA_EMOJI.sparkleHeart}`,
-  `Porque sabemos que disfrutas mucho las *pinturas con diamantes* ${WA_EMOJI.sparkles}`,
-  '',
-  `${WA_EMOJI.palette} Hemos armado un *pack de 3 pinturas (40x30 cm c/u)*`,
-  'Perfectas para relajarte y *decorar tu hogar*',
-  '',
-  `${WA_EMOJI.moneyBag} *Cada pack por solo S/ 68.00*`,
-  '',
-  `${WA_EMOJI.truck} *Delivery GRATIS*`,
-  `${WA_EMOJI.cash} *Pagas cuando lo recibes*`,
-  '',
-  `${WA_EMOJI.point} *Elige tu pack favorito y continúa tu pedido fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
-  '',
-  'https://elverantony.github.io/mercadocentralexpress1/',
-].join('\n');
+const PAINTS_TEMPLATES = [
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Vimos que anteriormente compraste *pinturas con diamantes* con nosotros ${WA_EMOJI.sparkleHeart}`,
+      `Por eso queremos mostrarte *nuevas opciones que te pueden encantar* ${WA_EMOJI.sparkles}`,
+      '',
+      `${WA_EMOJI.palette} Hemos preparado *packs de 3 pinturas (40x30 cm c/u)*`,
+      `Ideales para *relajarte y decorar tu hogar*`,
+      '',
+      `${WA_EMOJI.yogaWoman} Perfectas para *desconectarte del estrés* y *disfrutar tu tiempo*`,
+      '',
+      `${WA_EMOJI.point} *Elige tu pack favorito y continúa tu pedido fácilmente por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      PAINTS_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Como ya compraste *pinturas con diamantes*, queremos compartirte *nuevos diseños* ${WA_EMOJI.sparkleHeart}`,
+      '',
+      `${WA_EMOJI.palette} *Packs de 3 pinturas (40x30 cm c/u)*`,
+      `Perfectas para *decorar tus espacios* y *relajarte* ${WA_EMOJI.sparkles}`,
+      '',
+      `${WA_EMOJI.star} Una actividad creativa que *muchos clientes están disfrutando*`,
+      '',
+      `${WA_EMOJI.point} *Mira las opciones y elige tu favorita aquí* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      PAINTS_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Sabemos que te gustan las *pinturas con diamantes* ${WA_EMOJI.sparkles}`,
+      `Por eso te compartimos *nuevas opciones* que están gustando mucho ${WA_EMOJI.sparkleHeart}`,
+      '',
+      `${WA_EMOJI.palette} *Pack de 3 pinturas (40x30 cm c/u)*`,
+      `Para relajarte, entretenerte y decorar`,
+      '',
+      `${WA_EMOJI.puzzle} Ideal para *pasar un buen momento en casa*`,
+      '',
+      `${WA_EMOJI.point} *Revisa los diseños y elige el tuyo aquí* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      PAINTS_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Te escribimos porque ya eres cliente de *pinturas con diamantes* ${WA_EMOJI.sparkleHeart}`,
+      '',
+      `${WA_EMOJI.palette} Tenemos *packs de 3 pinturas (40x30 cm c/u)*`,
+      `Perfectos para *seguir disfrutando esta actividad* ${WA_EMOJI.sparkles}`,
+      '',
+      `${WA_EMOJI.target} Muchos clientes los usan para *relajarse y decorar su hogar*`,
+      '',
+      `${WA_EMOJI.point} *Elige tu pack aquí y continúa por WhatsApp* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      PAINTS_URL,
+    ].join('\n'),
+  ({ greeting }) =>
+    [
+      greeting,
+      '',
+      `Como ya probaste nuestras *pinturas con diamantes*, queríamos mostrarte *nuevas opciones* ${WA_EMOJI.sparkleHeart}`,
+      '',
+      `${WA_EMOJI.palette} *Packs de 3 pinturas (40x30 cm c/u)*`,
+      `Ideales para disfrutar tu tiempo libre y decorar ${WA_EMOJI.sparkles}`,
+      '',
+      `${WA_EMOJI.yogaWoman} Una forma entretenida de *relajarte en casa*`,
+      '',
+      `${WA_EMOJI.point} *Mira los diseños disponibles y elige el tuyo aquí* ${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}${WA_EMOJI.down}`,
+      '',
+      PAINTS_URL,
+    ].join('\n'),
+];
 
 const waState = {
   contacts: [],
   skippedRows: 0,
   sentPhones: {},
+  messageTemplateByPhone: {},
+  hasPendingTemplatePersist: false,
   hasNotifiedCacheError: false,
 };
 
@@ -90,7 +159,8 @@ function handlePreviewActionClick(event) {
   }
 
   markPhoneAsSent(phone);
-  copyWhatsappMessageToClipboard();
+  const message = getMessageForPhone(phone);
+  copyWhatsappMessageToClipboard(message);
 }
 
 function processWhatsappList() {
@@ -140,6 +210,7 @@ function resetWhatsappResults(shouldClearCache) {
   waState.contacts = [];
   waState.skippedRows = 0;
   waState.sentPhones = {};
+  waState.messageTemplateByPhone = {};
   renderWhatsappPreview([]);
   updateWhatsappSummary();
 
@@ -160,6 +231,7 @@ function restoreWhatsappCache() {
   waElements.input.value = cachedInput;
   waState.skippedRows = cachedSkipped;
   waState.sentPhones = normalizeSentPhones(payload.sentPhones);
+  waState.messageTemplateByPhone = normalizeTemplateByPhone(payload.messageTemplateByPhone);
   waState.contacts = normalizeCachedContacts(payload.contacts);
 
   cleanupSentPhones();
@@ -173,12 +245,13 @@ function restoreWhatsappCache() {
 
 function persistWhatsappCache() {
   const payload = {
-    version: 2,
+    version: 3,
     expiresAt: Date.now() + WA_CACHE_TTL_MS,
     rawInput: waElements.input.value || '',
     contacts: waState.contacts,
     skippedRows: waState.skippedRows,
     sentPhones: waState.sentPhones,
+    messageTemplateByPhone: waState.messageTemplateByPhone,
   };
 
   try {
@@ -286,6 +359,16 @@ function cleanupSentPhones() {
   });
 
   waState.sentPhones = cleaned;
+
+  const cleanedTemplates = {};
+  Object.entries(waState.messageTemplateByPhone).forEach(([phone, templateIndex]) => {
+    if (!phoneSet.has(phone)) {
+      return;
+    }
+
+    cleanedTemplates[phone] = templateIndex;
+  });
+  waState.messageTemplateByPhone = cleanedTemplates;
 }
 
 function markPhoneAsSent(phone) {
@@ -497,7 +580,8 @@ function renderWhatsappPreview(contacts) {
   waElements.previewBody.innerHTML = contacts
     .slice(0, 300)
     .map((contact, index) => {
-      const link = buildWhatsappLink(contact.phone);
+      const message = getMessageForContact(contact);
+      const link = buildWhatsappLink(contact.phone, message);
       const isSent = Boolean(waState.sentPhones[contact.phone]);
       const sentClass = isSent ? ' is-sent' : '';
       const sentLabel = isSent ? 'Enviado' : 'Enviar por WhatsApp';
@@ -532,10 +616,15 @@ function renderWhatsappPreview(contacts) {
       `;
     })
     .join('');
+
+  if (waState.hasPendingTemplatePersist) {
+    waState.hasPendingTemplatePersist = false;
+    persistWhatsappCache();
+  }
 }
 
-function buildWhatsappLink(phone) {
-  const encodedText = encodeWhatsappTextUtf8(WHATSAPP_MESSAGE);
+function buildWhatsappLink(phone, message) {
+  const encodedText = encodeWhatsappTextUtf8(String(message || ''));
   const encodedPhone = encodeURIComponent(phone);
   return `https://api.whatsapp.com/send?phone=${encodedPhone}&text=${encodedText}&type=phone_number&app_absent=0`;
 }
@@ -625,15 +714,16 @@ function escapeHtml(value) {
   return div.innerHTML;
 }
 
-async function copyWhatsappMessageToClipboard() {
+async function copyWhatsappMessageToClipboard(message) {
+  const textToCopy = String(message || '');
   try {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-      await navigator.clipboard.writeText(WHATSAPP_MESSAGE);
+      await navigator.clipboard.writeText(textToCopy);
       announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
       return;
     }
 
-    fallbackCopyText(WHATSAPP_MESSAGE);
+    fallbackCopyText(textToCopy);
     announceWhatsapp('Mensaje copiado con emojis. Solo pega y envia en WhatsApp.', 'success', true, 'Mensaje copiado');
   } catch (_error) {
     announceWhatsapp('No se pudo copiar automatico. Copialo manualmente si tu navegador lo bloquea.', 'error', true, 'Copia bloqueada');
@@ -666,4 +756,93 @@ function encodeWhatsappTextUtf8(text) {
   });
 
   return encoded;
+}
+
+function getMessageForContact(contact) {
+  const phone = contact.phone;
+  const firstName = getValidFirstName(contact.name);
+  const greeting = firstName
+    ? `Hola ${WA_EMOJI.smile} ${firstName}, somos de Mercado Central Express`
+    : `Hola ${WA_EMOJI.smile}, somos de Mercado Central Express`;
+
+  let templateIndex = waState.messageTemplateByPhone[phone];
+  if (!Number.isInteger(templateIndex) || templateIndex < 0 || templateIndex >= PAINTS_TEMPLATES.length) {
+    templateIndex = pickRandomIndex(PAINTS_TEMPLATES.length);
+    waState.messageTemplateByPhone[phone] = templateIndex;
+    waState.hasPendingTemplatePersist = true;
+  }
+
+  return PAINTS_TEMPLATES[templateIndex]({ greeting });
+}
+
+function getMessageForPhone(phone) {
+  const contact = waState.contacts.find((item) => item.phone === phone);
+  if (!contact) {
+    return '';
+  }
+  return getMessageForContact(contact);
+}
+
+function pickRandomIndex(maxExclusive) {
+  const max = Math.max(1, Number(maxExclusive) || 1);
+
+  try {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % max;
+    }
+  } catch (_error) {
+    // ignore
+  }
+
+  return Math.floor(Math.random() * max);
+}
+
+function getValidFirstName(fullName) {
+  const cleaned = cleanName(fullName);
+  if (!cleaned) {
+    return '';
+  }
+
+  const lowered = cleaned.toLowerCase();
+  if (lowered.startsWith('cliente ')) {
+    return '';
+  }
+
+  if (/\d/.test(cleaned)) {
+    return '';
+  }
+
+  const token = cleaned.split(' ')[0] || '';
+  if (token.length < 2) {
+    return '';
+  }
+
+  return token.charAt(0).toUpperCase() + token.slice(1);
+}
+
+function normalizeTemplateByPhone(value) {
+  if (!value || typeof value !== 'object') {
+    return {};
+  }
+
+  const out = {};
+  Object.entries(value).forEach(([phone, templateIndex]) => {
+    if (!/^519\d{8}$/.test(phone)) {
+      return;
+    }
+
+    if (!Number.isInteger(templateIndex)) {
+      return;
+    }
+
+    if (templateIndex < 0 || templateIndex >= PAINTS_TEMPLATES.length) {
+      return;
+    }
+
+    out[phone] = templateIndex;
+  });
+
+  return out;
 }
