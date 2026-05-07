@@ -3,25 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mercado Central Express | Generador de Tarjetas</title>
+    <title>Mercado Central Express | Copy Día de la Madre</title>
     <meta
       name="description"
-      content="Convierte pedidos desde Excel a un PDF listo para imprimir, directamente desde el navegador."
+      content="Copia mensajes para WhatsApp (Día de la Madre) a partir de texto pegado con nombre y teléfono."
     />
     <link rel="stylesheet" href="style.css?v=10" />
   </head>
   <body>
     <div class="page-shell">
-      <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
-      <div class="sr-only" id="srStatus" aria-live="polite"></div>
-
-      <div class="loading-overlay" id="loadingOverlay" hidden aria-hidden="true">
-        <div class="loading-dialog" role="status" aria-live="assertive" aria-busy="true">
-          <div class="loading-spinner" aria-hidden="true"></div>
-          <strong id="loadingTitle">Procesando</strong>
-          <p id="loadingMessage">Espera un momento...</p>
-        </div>
-      </div>
+      <div class="toast-stack" id="waMadreToastStack" aria-live="polite" aria-atomic="true"></div>
+      <div class="sr-only" id="waMadreSrStatus" aria-live="polite"></div>
 
       <header class="topbar reveal reveal-delay-1">
         <div class="topbar-inner">
@@ -31,12 +23,12 @@
             </div>
             <div class="brand-copy">
               <h1>Mercado Central Express</h1>
-              <p>Convertir pedidos desde Excel a un PDF listo para imprimir</p>
+              <p>Copy Día de la Madre</p>
             </div>
           </div>
 
           <nav class="module-nav" aria-label="Modulos internos">
-            <a class="module-link is-active" href="index.html">
+            <a class="module-link" href="index.html">
               <span class="module-link-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                   <path d="M5 4h14v16H5z"></path>
@@ -76,7 +68,7 @@
               </span>
               <span>Copy Pinturas Whatsapp</span>
             </a>
-            <a class="module-link" href="whatsapp-madre.html">
+            <a class="module-link is-active" href="whatsapp-madre.html">
               <span class="module-link-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                   <path d="M20 11.4a8.4 8.4 0 0 1-12.4 7.4L4 20l1.3-3.4A8.4 8.4 0 1 1 20 11.4z"></path>
@@ -90,68 +82,68 @@
         </div>
       </header>
 
-      <main class="workspace" data-card-app>
-        <section class="sidebar-card reveal reveal-delay-2">
+      <main class="workspace workspace-csv reveal reveal-delay-2" data-whatsapp-madre-app>
+        <section class="sidebar-card csv-sidebar">
           <div class="section-head compact-head">
             <div>
-              <span class="section-kicker">Carga</span>
-              <h2>Sube el archivo</h2>
+              <span class="section-kicker">Entrada</span>
+              <h2>Pega nombres y teléfonos</h2>
             </div>
-            <p>Lectura local y exportacion inmediata.</p>
+            <p>Compatible con columnas NAME y PHONE NUMBER, con o sin encabezados.</p>
           </div>
 
-          <label for="excelFile" class="upload-zone" id="uploadZone">
-            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" hidden />
-            <span class="upload-icon" aria-hidden="true">+</span>
-            <strong>Subir archivo Excel</strong>
-            <span>Haz clic o arrastra aqui</span>
-          </label>
+          <label class="field-label" for="waMadrePasteInput">Texto copiado desde Excel</label>
+          <textarea
+            id="waMadrePasteInput"
+            class="paste-input"
+            placeholder="Ejemplo: NAME[TAB]PHONE NUMBER"
+            spellcheck="false"
+          ></textarea>
 
-          <div class="actions compact-actions">
-            <button id="actionBtn" class="btn btn-primary" disabled>Generar PDF</button>
+          <div class="actions compact-actions csv-actions">
+            <button id="waMadreProcessBtn" class="btn btn-primary">Procesar lista</button>
+            <button id="waMadreResetBtn" class="btn btn-secondary">Limpiar lista</button>
           </div>
 
           <div class="mini-stats">
             <article class="mini-stat">
-              <span>Pedidos</span>
-              <strong id="orderCount">0</strong>
+              <span>Contactos</span>
+              <strong id="waMadreContactCount">0</strong>
             </article>
             <article class="mini-stat">
-              <span>Hojas</span>
-              <strong id="sheetCount">0</strong>
+              <span>Excluidos</span>
+              <strong id="waMadreSkippedCount">0</strong>
             </article>
           </div>
 
           <div class="format-note">
-            <span>Formato obligatorio</span>
-            <code>CLIENTE | CELULAR | PRODUCTO | PRECIO | FECHA DE ENVIO | OBSERVACION</code>
+            <span>Formato esperado</span>
+            <code>NAME | PHONE NUMBER</code>
           </div>
         </section>
 
-        <section class="content-card reveal reveal-delay-3">
+        <section class="content-card csv-content">
           <div class="section-head preview-head">
             <div>
               <span class="section-kicker">Vista previa</span>
-              <h2>Pedidos cargados</h2>
+              <h2>Dashboard de envíos por WhatsApp</h2>
             </div>
-            <div class="preview-note">Lectura exacta por columnas</div>
+            <div class="preview-note">Mensaje aleatorio para el Día de la Madre</div>
           </div>
 
-          <div class="table-wrapper">
-            <table class="preview-table">
+          <div class="table-wrapper csv-table-wrapper">
+            <table class="preview-table wa-preview-table">
               <thead>
                 <tr>
-                  <th>CLIENTE</th>
-                  <th>CELULAR</th>
-                  <th>PRODUCTO</th>
-                  <th>PRECIO</th>
-                  <th>FECHA DE ENVIO</th>
-                  <th>OBSERVACION</th>
+                  <th>N°</th>
+                  <th>Nombre</th>
+                  <th>Número de WhatsApp</th>
+                  <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="previewBody">
+              <tbody id="waMadrePreviewBody">
                 <tr class="empty-row">
-                  <td colspan="6">Aun no se han cargado pedidos.</td>
+                  <td colspan="4">Aún no se han procesado contactos.</td>
                 </tr>
               </tbody>
             </table>
@@ -160,9 +152,6 @@
       </main>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="logo-data.js?v=4"></script>
-    <script src="app.js?v=4"></script>
+    <script src="whatsapp-madre.js?v=1"></script>
   </body>
 </html>
