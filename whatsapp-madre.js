@@ -1,7 +1,7 @@
 const WA_CACHE_KEY = 'mce_whatsapp_madre_cache_v1';
 const WA_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-const MADRE_URL = 'https://mercado-central-express.vercel.app';
+const MADRE_URL = 'https://mercado-central-express.vercel.app/?promo=mama';
 
 const WA_EMOJI = {
   smile: String.fromCodePoint(0x1f60a),
