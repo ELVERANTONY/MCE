@@ -3,17 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mercado Central Express | Copy Día de la Madre</title>
+    <title>Mercado Central Express | Copy Grupo VIP</title>
     <meta
       name="description"
-      content="Copia mensajes para WhatsApp (Día de la Madre) a partir de texto pegado con nombre y teléfono."
+      content="Copia mensajes para WhatsApp (Grupo VIP) a partir de texto pegado con nombre y teléfono."
     />
     <link rel="stylesheet" href="style.css?v=10" />
   </head>
   <body>
     <div class="page-shell">
-      <div class="toast-stack" id="waMadreToastStack" aria-live="polite" aria-atomic="true"></div>
-      <div class="sr-only" id="waMadreSrStatus" aria-live="polite"></div>
+      <div class="toast-stack" id="waVipToastStack" aria-live="polite" aria-atomic="true"></div>
+      <div class="sr-only" id="waVipSrStatus" aria-live="polite"></div>
 
       <header class="topbar reveal reveal-delay-1">
         <div class="topbar-inner">
@@ -23,7 +23,7 @@
             </div>
             <div class="brand-copy">
               <h1>Mercado Central Express</h1>
-              <p>Copy Día de la Madre</p>
+              <p>Copy Grupo VIP</p>
             </div>
           </div>
 
@@ -68,7 +68,7 @@
               </span>
               <span>Copy Pinturas Whatsapp</span>
             </a>
-            <a class="module-link is-active" href="whatsapp-madre.html">
+            <a class="module-link" href="whatsapp-madre.html">
               <span class="module-link-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                   <path d="M20 11.4a8.4 8.4 0 0 1-12.4 7.4L4 20l1.3-3.4A8.4 8.4 0 1 1 20 11.4z"></path>
@@ -78,7 +78,7 @@
               </span>
               <span>Copy Día de la Madre</span>
             </a>
-            <a class="module-link" href="whatsapp-vip.html">
+            <a class="module-link is-active" href="whatsapp-vip.html">
               <span class="module-link-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                   <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"></path>
@@ -90,7 +90,7 @@
         </div>
       </header>
 
-      <main class="workspace workspace-csv reveal reveal-delay-2" data-whatsapp-madre-app>
+      <main class="workspace workspace-csv reveal reveal-delay-2" data-whatsapp-vip-app>
         <section class="sidebar-card csv-sidebar">
           <div class="section-head compact-head">
             <div>
@@ -100,27 +100,27 @@
             <p>Compatible con columnas NAME y PHONE NUMBER, con o sin encabezados.</p>
           </div>
 
-          <label class="field-label" for="waMadrePasteInput">Texto copiado desde Excel</label>
+          <label class="field-label" for="waVipPasteInput">Texto copiado desde Excel</label>
           <textarea
-            id="waMadrePasteInput"
+            id="waVipPasteInput"
             class="paste-input"
             placeholder="Ejemplo: NAME[TAB]PHONE NUMBER"
             spellcheck="false"
           ></textarea>
 
           <div class="actions compact-actions csv-actions">
-            <button id="waMadreProcessBtn" class="btn btn-primary">Procesar lista</button>
-            <button id="waMadreResetBtn" class="btn btn-secondary">Limpiar lista</button>
+            <button id="waVipProcessBtn" class="btn btn-primary">Procesar lista</button>
+            <button id="waVipResetBtn" class="btn btn-secondary">Limpiar lista</button>
           </div>
 
           <div class="mini-stats">
             <article class="mini-stat">
               <span>Contactos</span>
-              <strong id="waMadreContactCount">0</strong>
+              <strong id="waVipContactCount">0</strong>
             </article>
             <article class="mini-stat">
               <span>Excluidos</span>
-              <strong id="waMadreSkippedCount">0</strong>
+              <strong id="waVipSkippedCount">0</strong>
             </article>
           </div>
 
@@ -136,7 +136,7 @@
               <span class="section-kicker">Vista previa</span>
               <h2>Dashboard de envíos por WhatsApp</h2>
             </div>
-            <div class="preview-note">Mensaje aleatorio para el Día de la Madre</div>
+            <div class="preview-note">Mensaje aleatorio para el Grupo VIP</div>
           </div>
 
           <div class="table-wrapper csv-table-wrapper">
@@ -149,7 +149,7 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="waMadrePreviewBody">
+              <tbody id="waVipPreviewBody">
                 <tr class="empty-row">
                   <td colspan="4">Aún no se han procesado contactos.</td>
                 </tr>
@@ -160,6 +160,6 @@
       </main>
     </div>
 
-    <script src="whatsapp-madre.js?v=2"></script>
+    <script src="whatsapp-vip.js?v=1"></script>
   </body>
 </html>
