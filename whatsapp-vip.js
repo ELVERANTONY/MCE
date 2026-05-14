@@ -17,7 +17,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Al llegar a los *400 miembros* realizaremos un sorteo exclusivo.',
+      '🎁 Al llegar a los *450 miembros* realizaremos un sorteo exclusivo.',
       '',
       '¡Te esperamos!',
     ].join('\n'),
@@ -36,7 +36,7 @@ const VIP_TEMPLATES = [
       '',
       VIP_LINK,
       '',
-      '🎁 Además, al llegar a los *400 integrantes* realizaremos un *SORTEO EXCLUSIVO* entre todos los miembros.',
+      '🎁 Además, al llegar a los *450 integrantes* realizaremos un *SORTEO EXCLUSIVO* entre todos los miembros.',
       '',
       '⚠️ No te quedes fuera y aprovecha los mejores precios antes que todos.',
     ].join('\n'),
@@ -54,7 +54,7 @@ const VIP_TEMPLATES = [
       'Ingresa aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Recuerda que al llegar a los *400 integrantes* realizaremos un sorteo especial entre todos los miembros del grupo.',
+      '🎁 Recuerda que al llegar a los *450 integrantes* realizaremos un sorteo especial entre todos los miembros del grupo.',
     ].join('\n'),
   () =>
     [
@@ -71,7 +71,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Muy pronto realizaremos un sorteo exclusivo al llegar a los 400 miembros.',
+      '🎁 Muy pronto realizaremos un sorteo exclusivo al llegar a los 450 miembros.',
     ].join('\n'),
   () =>
     [
@@ -88,7 +88,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 *Sorteo exclusivo* al completar los 400 integrantes del grupo.',
+      '🎁 *Sorteo exclusivo* al completar los 450 integrantes del grupo.',
     ].join('\n'),
 ];
 
@@ -134,7 +134,7 @@ function handleWhatsappInputChange() {
 function handlePreviewActionClick(event) {
   const actionLink = event.target.closest('a[data-wa-phone]');
   if (!actionLink) return;
-  
+
   const phone = String(actionLink.dataset.waPhone || '').trim();
   if (!phone) return;
 
@@ -209,7 +209,7 @@ function persistWhatsappCache() {
   };
   try {
     localStorage.setItem(WA_CACHE_KEY, JSON.stringify(payload));
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function clearWhatsappCache() {
@@ -287,7 +287,7 @@ function getMessageForContact(contact) {
   }
   const idx = waState.messageTemplateByPhone[contact.phone];
   const template = VIP_TEMPLATES[idx];
-  
+
   return template();
 }
 
@@ -301,7 +301,7 @@ function renderWhatsappPreview(contacts) {
     const isSent = !!waState.sentPhones[c.phone];
     const msg = getMessageForContact(c);
     const link = `https://api.whatsapp.com/send?phone=${c.phone}&text=${encodeURIComponent(msg)}`;
-    
+
     return `
       <tr>
         <td>${i + 1}</td>
