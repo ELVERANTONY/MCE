@@ -17,7 +17,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Al llegar a los *500 miembros* realizaremos un sorteo exclusivo.',
+      '🎁 Al llegar a los *600 miembros* realizaremos un sorteo exclusivo.',
       '',
       '¡Te esperamos!',
     ].join('\n'),
@@ -36,7 +36,7 @@ const VIP_TEMPLATES = [
       '',
       VIP_LINK,
       '',
-      '🎁 Además, al llegar a los *500 integrantes* realizaremos un *SORTEO EXCLUSIVO* entre todos los miembros.',
+      '🎁 Además, al llegar a los *600 integrantes* realizaremos un *SORTEO EXCLUSIVO* entre todos los miembros.',
       '',
       '⚠️ No te quedes fuera y aprovecha los mejores precios antes que todos.',
     ].join('\n'),
@@ -54,7 +54,7 @@ const VIP_TEMPLATES = [
       'Ingresa aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Recuerda que al llegar a los *500 integrantes* realizaremos un sorteo especial entre todos los miembros del grupo.',
+      '🎁 Recuerda que al llegar a los *600 integrantes* realizaremos un sorteo especial entre todos los miembros del grupo.',
     ].join('\n'),
   () =>
     [
@@ -71,7 +71,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 Muy pronto realizaremos un sorteo exclusivo al llegar a los 500 miembros.',
+      '🎁 Muy pronto realizaremos un sorteo exclusivo al llegar a los 600 miembros.',
     ].join('\n'),
   () =>
     [
@@ -88,7 +88,7 @@ const VIP_TEMPLATES = [
       'Únete aquí 👇',
       VIP_LINK,
       '',
-      '🎁 *Sorteo exclusivo* al completar los 500 integrantes del grupo.',
+      '🎁 *Sorteo exclusivo* al completar los 600 integrantes del grupo.',
     ].join('\n'),
   () =>
     [
@@ -104,7 +104,7 @@ const VIP_TEMPLATES = [
       'Haz clic aquí para entrar 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Habrá un gran sorteo cuando lleguemos a 500 miembros!',
+      '🎁 ¡Habrá un gran sorteo cuando lleguemos a 600 miembros!',
     ].join('\n'),
   () =>
     [
@@ -120,7 +120,7 @@ const VIP_TEMPLATES = [
       'Ingresa a la comunidad 👇',
       VIP_LINK,
       '',
-      '🎁 Atención: ¡Sorteo especial confirmado al alcanzar los 500 participantes!',
+      '🎁 Atención: ¡Sorteo especial confirmado al alcanzar los 600 participantes!',
     ].join('\n'),
   () =>
     [
@@ -136,7 +136,7 @@ const VIP_TEMPLATES = [
       'Dale clic al enlace para unirte 👇',
       VIP_LINK,
       '',
-      '🎁 ¡No te pierdas nuestro sorteo al ser 500 integrantes!',
+      '🎁 ¡No te pierdas nuestro sorteo al ser 600 integrantes!',
     ].join('\n'),
   () =>
     [
@@ -152,7 +152,7 @@ const VIP_TEMPLATES = [
       'Te esperamos adentro 👇',
       VIP_LINK,
       '',
-      '🎁 Participa del sorteo exclusivo cuando seamos 500 en el grupo.',
+      '🎁 Participa del sorteo exclusivo cuando seamos 600 en el grupo.',
     ].join('\n'),
   () =>
     [
@@ -168,7 +168,7 @@ const VIP_TEMPLATES = [
       'Súmate desde aquí 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Se viene un gran premio sorteado al llegar a 500 personas!',
+      '🎁 ¡Se viene un gran premio sorteado al llegar a 600 personas!',
     ].join('\n'),
   () =>
     [
@@ -184,7 +184,7 @@ const VIP_TEMPLATES = [
       'Entra al grupo ahora mismo 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Falta muy poco para los 500 miembros y lanzar el gran sorteo!',
+      '🎁 ¡Falta muy poco para los 600 miembros y lanzar el gran sorteo!',
     ].join('\n'),
   () =>
     [
@@ -200,7 +200,7 @@ const VIP_TEMPLATES = [
       'Acepta tu invitación aquí 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Y prepárate para el sorteo cuando el grupo alcance los 500 usuarios!',
+      '🎁 ¡Y prepárate para el sorteo cuando el grupo alcance los 600 usuarios!',
     ].join('\n'),
   () =>
     [
@@ -216,7 +216,7 @@ const VIP_TEMPLATES = [
       'Pincha el enlace para ingresar 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Sortearemos un premio exclusivo al llegar a 500 integrantes!',
+      '🎁 ¡Sortearemos un premio exclusivo al llegar a 600 integrantes!',
     ].join('\n'),
   () =>
     [
@@ -232,7 +232,7 @@ const VIP_TEMPLATES = [
       'Conéctate al grupo VIP aquí 👇',
       VIP_LINK,
       '',
-      '🎁 ¡No olvides que habrá un súper sorteo al juntar 500 miembros!',
+      '🎁 ¡No olvides que habrá un súper sorteo al juntar 600 miembros!',
     ].join('\n'),
   () =>
     [
@@ -248,7 +248,7 @@ const VIP_TEMPLATES = [
       'Ingresa a nuestro club 👇',
       VIP_LINK,
       '',
-      '🎁 Participa en el súper sorteo de celebración por los 500 integrantes.',
+      '🎁 Participa en el súper sorteo de celebración por los 600 integrantes.',
     ].join('\n'),
   () =>
     [
@@ -264,7 +264,7 @@ const VIP_TEMPLATES = [
       'Haz clic y únete ya 👇',
       VIP_LINK,
       '',
-      '🎁 ¡A punto de llegar a 500 miembros para activar el gran sorteo!',
+      '🎁 ¡A punto de llegar a 600 miembros para activar el gran sorteo!',
     ].join('\n'),
   () =>
     [
@@ -280,7 +280,7 @@ const VIP_TEMPLATES = [
       'Accede a los beneficios 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Sorteo especial en camino al sumar 500 personas al grupo!',
+      '🎁 ¡Sorteo especial en camino al sumar 600 personas al grupo!',
     ].join('\n'),
   () =>
     [
@@ -296,7 +296,7 @@ const VIP_TEMPLATES = [
       'Únete con un solo clic 👇',
       VIP_LINK,
       '',
-      '🎁 ¡Un sorteo increíble nos espera al alcanzar los 500 miembros!',
+      '🎁 ¡Un sorteo increíble nos espera al alcanzar los 600 miembros!',
     ].join('\n'),
   () =>
     [
@@ -312,7 +312,7 @@ const VIP_TEMPLATES = [
       'Entra al chat VIP 👇',
       VIP_LINK,
       '',
-      '🎁 ¡No te pierdas el gran sorteo cuando lleguemos a los 500 participantes!',
+      '🎁 ¡No te pierdas el gran sorteo cuando lleguemos a los 600 participantes!',
     ].join('\n'),
   () =>
     [
@@ -328,7 +328,7 @@ const VIP_TEMPLATES = [
       'Dale clic al link para entrar 👇',
       VIP_LINK,
       '',
-      '🎁 ¡El gran sorteo se realizará cuando seamos 500 en el grupo!',
+      '🎁 ¡El gran sorteo se realizará cuando seamos 600 en el grupo!',
     ].join('\n'),
 ];
 
